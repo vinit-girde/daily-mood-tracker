@@ -8,13 +8,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
     <!-- Css linked -->
     <link rel="stylesheet" href="style.css" />
+    <!-- Full Calender CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1/index.global.min.js"></script>
+    <!-- Js file linked -->
+    <script src="./script.js"></script>
   </head>
   <body>
-    Mood Tracker
+    <main class="container">
+      <article class="hero-title">
+        <h1>Mood Tracker</h1>
+        <p>Track Your Mood Everyday.</p>
+      </article>
+      <section class="mood-tracker">
+        <div class="moods-option">
+          <button data-mood="Happy" title="Happy">😀</button>
+          <button data-mood="Sad" title="Sad">🙁</button>
+          <button data-mood="Angry" title="Angry">😠</button>
+          <button data-mood="Neutral" title="Neutral">😐</button>
+          <button data-mood="Excited" title="Excited">🤩</button>
+          <button data-mood="Stressed" title="Stressed">😫</button>
+          <button data-mood="Calm" title="Calm">😌</button>
+        </div>
+        <button id="saveBtn" onclick="saveMood()">Save Your Mood</button>
+      </section>
+      <section class="log-timeline">
+        <div id="calendar"></div>
+      </section>
+    </main>
   </body>
 </html>
