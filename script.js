@@ -1,68 +1,81 @@
-// selecting calender div id
+// Selecting calendar div
 const calendarEl = document.getElementById("calendar");
 
-// Initialize FullCalendar to show calender
+// Initialize FullCalendar to show calendar
 const calendar = new FullCalendar.Calendar(calendarEl, {
   initialView: "dayGridMonth",
-  // adding events from local storage
-  events: getEventsFromLocalStorage(),
+  // Loads events from local storage and refectesEvents data in UI.
+  events: function (_fetchInfo, successCallback) {
+    // fetches stored events from local storage
+    successCallback(getEventsFromLocalStorage());
+  },
 });
 
-// Rendering calender
+// Render calendar
 calendar.render();
 
-// selected mood variable
+// Selected mood variable
 let selectedMood = null;
 // Selecting mood section element
 let moodDetails = document.getElementById("moods-section");
 
-// selecting save mood button
+// Selecting save mood button
 const saveBtn = document.getElementById("saveBtn");
 
 // Getting all children of moodsDetails element
 const moodsDetailsButton = moodDetails.children;
 
-// looping through moodsDetailsButton to find selected mood
+// Looping through moodsDetailsButton to find selected mood
 for (let mood of moodsDetailsButton) {
   mood.addEventListener("click", function () {
     // Remove previous style from all mood buttons
     for (let btn of moodsDetailsButton) {
       btn.classList.remove("selected");
     }
-    // storing the selected mood
+    // Storing the selected mood
     selectedMood = mood.getAttribute("data-mood");
 
-    // adding the selected mood in save mood button inner text
+    // Updating the save mood button text
     saveBtn.innerText = `Save Mood = ${selectedMood}`;
 
-    // adding selected class style for clicked emoji
+    // Adding selected class style for clicked emoji
     mood.classList.add("selected");
   });
 }
 
-// Function to save mood and log into calender.
+// Function to save mood and add into calendar
 function saveMood() {
   if (selectedMood) {
+    let today = new Date().toISOString().split("T")[0];
+
+    // Remove only today's events, not past ones
+    calendar.getEvents().forEach((event) => {
+      if (event.start.toISOString().split("T")[0] === today) {
+        event.remove();
+      }
+    });
+
     let moodEvent = {
       title: `Mood: ${selectedMood}`,
-      start: new Date().toISOString(),
+      start: today,
+      end: today,
       allDay: true,
       backgroundColor: getMoodColor(selectedMood),
       textColor: "#2d3436",
     };
-    //adding selected mood for todays date
-    calendar.addEvent(moodEvent);
 
-    // saving it to local storage.
+    // Saving it to local storage
     saveEventToLocalStorage(moodEvent);
 
-    // resetting values and removing classes
+    // Re-fetch events from local storage and render them
+    calendar.refetchEvents();
+
+    // Resetting values and removing classes
     selectedMood = null;
     saveBtn.innerText = "Save Mood";
 
-    // looping through moodsButton to remove previous selected mood
+    // Looping through moodsButton to remove previous selected mood
     for (let mood of moodsDetailsButton) {
-      // remove previous style from all mood buttons
       mood.classList.remove("selected");
     }
   } else {
@@ -70,7 +83,7 @@ function saveMood() {
   }
 }
 
-// Function to add background color according to selected Mood
+// Function to add background color according to selected mood
 function getMoodColor(mood) {
   switch (mood) {
     case "Happy":
@@ -94,15 +107,20 @@ function getMoodColor(mood) {
 
 // Function to retrieve stored mood events from local storage
 function getEventsFromLocalStorage() {
-  // Retrieving previous mood events data and returning the events
-  const events = JSON.parse(localStorage.getItem("moodEvents")) || [];
+  let events = JSON.parse(localStorage.getItem("moodEvents")) || [];
   return events;
 }
-// Function to save mood events to local storage.
+
+// Function to save mood events to local storage
 function saveEventToLocalStorage(event) {
-  // get all previous mood events and push new event
-  const events = getEventsFromLocalStorage();
+  let events = getEventsFromLocalStorage();
+
+  // Remove any existing event for the same date
+  events = events.filter((e) => e.start !== event.start);
+
+  // Push the new event
   events.push(event);
-  // saving item to local storage
+
+  // Save to local storage
   localStorage.setItem("moodEvents", JSON.stringify(events));
 }
